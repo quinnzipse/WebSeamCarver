@@ -14,9 +14,9 @@ image.onload = function () {
     ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
     var pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
     // convolveSeparable(pixel_data, [1, 1, 1], [-1, 0, 1]);
-    // detectEdges(pixel_data);
-    brightExtract(pixel_data);
-    ctx.putImageData(pixel_data, 0, 0);
+    // brightExtract(pixel_data);
+    var edges = detectEdges(pixel_data);
+    ctx.putImageData(edges, 0, 0);
 };
 image.crossOrigin = "Anonymous";
 image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
@@ -39,31 +39,39 @@ function convolveSeparable(image_data, x_kernel, y_kernel) {
  * @param image_data ImageData of the image you'd like to make greyscale.
  */
 function brightExtract(image_data) {
+    // Create the destination image.
+    var output = ctx.createImageData(image_data.width, image_data.height);
+    // For each pixel...
     for (var y = 0; y < image_data.height; y++) {
         for (var x = 0; x < image_data.width; x++) {
-            var brightness = Math.ceil(getHSBFromPackedRGB(getPixel(image_data, x, y))[2] * 255);
-            setGreyPixel(image_data, x, y, brightness);
+            // Extract the brightness band.
+            var brightness = Math.floor(getHSBFromPackedRGB(getPixel(image_data, x, y))[2] * 255);
+            setGreyPixel(output, x, y, brightness);
         }
     }
+    return output;
 }
 function detectEdges(image_data) {
-    for (var y = 0; y < image_data.height / 5; y++) {
-        for (var x = 0; x < image_data.width / 5; x++) {
-            // For each pixel in the image....
-            var right_pixel = getPixel(image_data, x + 1, y);
-            console.log("R", right_pixel >> 16 & 0xff, "G", right_pixel >> 8 & 0xff, "B", right_pixel & 0xff);
-            var right_hsb = getHSBFromPackedRGB(right_pixel);
-            console.log("HSB", right_hsb);
-            var left_pixel = getPixel(image_data, x - 1, y);
-            var left_hsb = getHSBFromPackedRGB(left_pixel);
-            // hsb is 0...1 so I will scale it to 8 bits.
-            var edge_strength = Math.abs(right_hsb[2] - left_hsb[2]) * 255;
-            if (edge_strength > 255 || edge_strength < 0) {
-                console.warn("Abnormal Edge Strength!", edge_strength);
-            }
-            setGreyPixel(image_data, x, y, edge_strength);
+    var output = ctx.createImageData(image_data.width, image_data.height);
+    // For each pixel...
+    for (var y = 0; y < image_data.height; y++) {
+        for (var x = 0; x < image_data.width; x++) {
+            // Get the right and left brightnesses.
+            var right_brightness = getHSBFromPackedRGB(getPixel(image_data, x + 1, y))[2];
+            var left_brightness = getHSBFromPackedRGB(getPixel(image_data, x - 1, y))[2];
+            // Get the top and bottom brightnesses.
+            var top_brightness = getHSBFromPackedRGB(getPixel(image_data, x, y - 1))[2];
+            var bottom_brightness = getHSBFromPackedRGB(getPixel(image_data, x, y + 1))[2];
+            // b is 0...1 so I will scale it to 8 bits.
+            var xDiff = Math.abs(left_brightness * 255 - right_brightness * 255);
+            var yDiff = Math.abs(top_brightness * 255 - bottom_brightness * 255);
+            // Combine these two to get the final edge value.
+            var edge_strength = Math.floor(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
+            // set that pixel to the output image data.
+            setGreyPixel(output, x, y, edge_strength);
         }
     }
+    return output;
 }
 /**
  * Converts a packed representation of a RGB value into an array of HSB values.
@@ -113,6 +121,14 @@ function getBand(image_data, x, y, b) {
     console.assert(b < NUM_BANDS && b >= 0, "index out of bounds!");
     return image_data.data[(x * NUM_BANDS) + (image_data.width * NUM_BANDS * y) + b];
 }
+/**
+ * Get's the packed RGB value
+ *
+ * @param image_data Image Data to get the pixel from.
+ * @param x x-coordinate
+ * @param y y-coordinate
+ * @return packed rgb value. Excludes alpha channel.
+ */
 function getPixel(image_data, x, y) {
     if (!(x < image_data.width && x >= 0)
         || !(y < image_data.height && y >= 0)) {
@@ -122,11 +138,32 @@ function getPixel(image_data, x, y) {
     var index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
     return image_data.data[index] << 16 | image_data.data[index + 1] << 8 | image_data.data[index + 2];
 }
+/**
+ * Sets the greyscale value to the location in the image specified.
+ *
+ * @param image_data Image data to set greyscale value of.
+ * @param x
+ * @param y
+ * @param grey_value clamped 8-bit grey value
+ */
 function setGreyPixel(image_data, x, y, grey_value) {
-    for (var b = 0; b < NUM_BANDS; b++) {
-        setBand(image_data, x, y, b, grey_value);
-    }
+    console.assert(image_data.width > x && x >= 0 &&
+        y >= 0 && image_data.height > y, "Index out of bounds!");
+    // Set the values. Make sure alpha stays 255.
+    setBand(image_data, x, y, 0, grey_value);
+    setBand(image_data, x, y, 1, grey_value);
+    setBand(image_data, x, y, 2, grey_value);
+    setBand(image_data, x, y, 3, 255);
 }
+/**
+ * Sets a specific band R, G, B, or Alpha of the image at a specific point.
+ *
+ * @param image_data Image Data of image to modify.
+ * @param x x-coordinate
+ * @param y y-coordinate
+ * @param b band to modify
+ * @param sample clamped, 8-bit value.
+ */
 function setBand(image_data, x, y, b, sample) {
     console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
     console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
