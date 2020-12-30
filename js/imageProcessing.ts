@@ -1,3 +1,6 @@
+// This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
+const NUM_BANDS = 4;
+
 let canvas = document.getElementById('image') as HTMLCanvasElement;
 let canvas2 = document.getElementById('originalImage') as HTMLCanvasElement;
 
@@ -34,19 +37,51 @@ image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_
  */
 function convolveSeparable(image_data: ImageData, x_kernel: number[], y_kernel: number[]) {
   // iterates over each pixel
-  // for (let i = 0; i < image_data.data.length; i += 4) {
-  //   image_data.data[i];
-  // }
+  for (let x = 0; x < image_data.width; x++) {
+    for (let y = 0; y < image_data.width; y++) {
 
-  getPixel(image_data, -1, -1);
+    }
+  }
+
 }
 
-function getPixel(image_data: ImageData, x: number, y: number) {
+/**
+ * Converts a packed representation of a RGB value into an array of HSB values.
+ * @param packedRGB 24-bit value containing 8 bits for each r, g, and b band.
+ */
+function getHSBFromPackedRGB(packedRGB: number) {
+  getHSBFromRGB(packedRGB >> 16 & 0xff, packedRGB >> 8 & 0xff, packedRGB & 0xff);
+}
+
+/**
+ * Converts an r, g, and b into their corresponding hsb values.
+ * @param r 8-bit red value
+ * @param g 8-bit green value
+ * @param b 8-bit blue value
+ */
+function getHSBFromRGB(r: number, g: number, b: number) {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  let cMax = Math.max(r, g, b), cMin = Math.min(r, g, b);
+  let h = 0, s = 0, br = 0;
+
+}
+
+function getBand(image_data: ImageData, x: number, y: number, b: number) {
   console.assert(x < image_data.width && x >= 0, "index out of bounds!");
   console.assert(y < image_data.height && y >= 0, "index out of bounds!");
+  console.assert(b < NUM_BANDS && b >= 0, "index out of bounds!");
 
-  const NUM_BANDS = 4;
-  let index = x * NUM_BANDS + image_data.width * y
+  return image_data.data[(x * NUM_BANDS) + (image_data.width * y) + b];
+}
 
-  return image_data.data[index];
+function getPixel(image_data: ImageData, x: number, y: number, b: number) {
+  console.assert(x < image_data.width && x >= 0, "index out of bounds!");
+  console.assert(y < image_data.height && y >= 0, "index out of bounds!");
+  console.assert(b < NUM_BANDS && b >= 0, "index out of bounds!");
+
+  let index = (x * NUM_BANDS) + (image_data.width * y);
+  return image_data.data[index] << 16 | image_data.data[index + 1] << 8 | image_data.data[index + 2];
 }
