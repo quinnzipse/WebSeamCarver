@@ -13,27 +13,12 @@ image.onload = function () {
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
     var pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    // convolveSeparable(pixel_data, [1, 1, 1], [-1, 0, 1]);
-    // brightExtract(pixel_data);
     var edges = detectEdges(pixel_data);
-    ctx.putImageData(edges, 0, 0);
+    var energyMap = getEnergyMap(edges);
+    ctx.putImageData(energyMap, 0, 0);
 };
 image.crossOrigin = "Anonymous";
 image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
-/**
- * Given image_data and separable kernel as input, this will perform convolution.
- *
- * @param image_data
- * @param x_kernel
- * @param y_kernel
- */
-function convolveSeparable(image_data, x_kernel, y_kernel) {
-    // iterates over each pixel
-    for (var x = 0; x < image_data.width; x++) {
-        for (var y = 0; y < image_data.width; y++) {
-        }
-    }
-}
 /**
  * Sets the image to only the brightness band in hsv.
  * @param image_data ImageData of the image you'd like to make greyscale.
@@ -51,6 +36,12 @@ function brightExtract(image_data) {
     }
     return output;
 }
+/**
+ * Detects edges and returns the output imageData
+ *
+ * @param image_data
+ * @return output image data
+ */
 function detectEdges(image_data) {
     var output = ctx.createImageData(image_data.width, image_data.height);
     // For each pixel...
@@ -122,7 +113,7 @@ function getBand(image_data, x, y, b) {
     return image_data.data[(x * NUM_BANDS) + (image_data.width * NUM_BANDS * y) + b];
 }
 /**
- * Get's the packed RGB value
+ * Get's the packed RGB value from a specific from a zero-padded x, y.
  *
  * @param image_data Image Data to get the pixel from.
  * @param x x-coordinate
@@ -171,4 +162,49 @@ function setBand(image_data, x, y, b, sample) {
     console.assert(sample >= 0 && sample <= 255, "Sample value out of bounds! " + sample);
     var index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y) + b;
     image_data.data[index] = sample;
+}
+/**
+ * Given a collection of edges from detectEdges, create an edge map.
+ *
+ * @param image_data ImageData of edges
+ * @return edgeMap
+ */
+function getEnergyMap(image_data) {
+    var energyArray = [];
+    var max = -1;
+    // Initialize the bottom row.
+    var energyX = [];
+    for (var x = 0; x < image_data.width; x++) {
+        var energy = getBand(image_data, x, image_data.height - 1, 0);
+        energyX.push(energy);
+        Math.max(max, energy);
+    }
+    energyArray.push(energyX);
+    for (var y = image_data.height - 2; y >= 0; y--) {
+        energyX = [];
+        for (var x = 0; x < image_data.width; x++) {
+            var bestPath = findLowestEnergy(energyArray, x, y);
+            var energy = getBand(image_data, x, y, 0);
+            energyX.push(energy + bestPath);
+            max = Math.max(max, energy + bestPath);
+        }
+        energyArray.unshift(energyX);
+    }
+    return energyArray;
+}
+function findLowestEnergy(energy_map, x, y) {
+    var mid = energy_map[0][x], right, left;
+    if (x < 0) {
+        left = Number.MAX_VALUE;
+    }
+    else {
+        left = energy_map[0][x - 1];
+    }
+    if (x == energy_map[0].length) {
+        right = Number.MAX_VALUE;
+    }
+    else {
+        right = energy_map[0][x + 1];
+    }
+    return Math.min(mid, right, left);
 }
