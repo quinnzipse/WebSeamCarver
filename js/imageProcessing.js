@@ -15,10 +15,12 @@ image.onload = function () {
     var pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var edges = detectEdges(pixel_data);
     var energyMap = getEnergyMap(edges);
-    ctx.putImageData(energyMap, 0, 0);
+    var energyImg = generateEnergyMapImg(energyMap);
+    ctx.putImageData(energyImg, 0, 0);
 };
 image.crossOrigin = "Anonymous";
 image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
+var _maxEnergy = -1;
 /**
  * Sets the image to only the brightness band in hsv.
  * @param image_data ImageData of the image you'd like to make greyscale.
@@ -171,13 +173,12 @@ function setBand(image_data, x, y, b, sample) {
  */
 function getEnergyMap(image_data) {
     var energyArray = [];
-    var max = -1;
     // Initialize the bottom row.
     var energyX = [];
     for (var x = 0; x < image_data.width; x++) {
         var energy = getBand(image_data, x, image_data.height - 1, 0);
         energyX.push(energy);
-        Math.max(max, energy);
+        _maxEnergy = Math.max(_maxEnergy, energy);
     }
     energyArray.push(energyX);
     for (var y = image_data.height - 2; y >= 0; y--) {
@@ -186,25 +187,40 @@ function getEnergyMap(image_data) {
             var bestPath = findLowestEnergy(energyArray, x, y);
             var energy = getBand(image_data, x, y, 0);
             energyX.push(energy + bestPath);
-            max = Math.max(max, energy + bestPath);
+            _maxEnergy = Math.max(_maxEnergy, energy + bestPath);
         }
         energyArray.unshift(energyX);
     }
+    console.log(_maxEnergy);
     return energyArray;
 }
+// TODO: Add doc
 function findLowestEnergy(energy_map, x, y) {
     var mid = energy_map[0][x], right, left;
-    if (x < 0) {
+    if (x - 1 < 0) {
         left = Number.MAX_VALUE;
     }
     else {
         left = energy_map[0][x - 1];
     }
-    if (x == energy_map[0].length) {
+    if (x + 1 == energy_map[0].length) {
         right = Number.MAX_VALUE;
     }
     else {
         right = energy_map[0][x + 1];
     }
     return Math.min(mid, right, left);
+}
+/**
+ * TODO: Finish this doc
+ * @param energy_map
+ */
+function generateEnergyMapImg(energy_map) {
+    var output = ctx.createImageData(energy_map[0].length, energy_map.length);
+    for (var y = 0; y < energy_map.length; y++) {
+        for (var x = 0; x < energy_map[0].length; x++) {
+            setGreyPixel(output, x, y, energy_map[y][x] / (_maxEnergy / 255));
+        }
+    }
+    return output;
 }
