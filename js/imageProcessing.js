@@ -5,6 +5,7 @@ var canvas2 = document.getElementById('originalImage');
 var ctx = canvas.getContext('2d');
 var ctx2 = canvas2.getContext('2d');
 var image = new Image();
+var seams = [];
 image.onload = function () {
     canvas.height = image.height * .8;
     canvas.width = image.width * .8;
@@ -13,10 +14,16 @@ image.onload = function () {
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
     var pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    var edges = detectEdges(pixel_data);
-    var energyMap = getEnergyMap(edges);
-    var energyImg = generateEnergyMapImg(energyMap);
-    ctx.putImageData(energyImg, 0, 0);
+    var edges, energyMap;
+    for (var i = 0; i < 50; i++) {
+        edges = detectEdges(pixel_data);
+        energyMap = getEnergyMap(edges);
+        var seam = findSeam(energyMap);
+        seams.push(seam);
+        // drawSeam(energyImg, seam);
+        pixel_data = removeSeam(pixel_data, seam);
+    }
+    ctx.putImageData(pixel_data, 0, 0);
 };
 image.crossOrigin = "Anonymous";
 image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
@@ -166,6 +173,22 @@ function setBand(image_data, x, y, b, sample) {
     image_data.data[index] = sample;
 }
 /**
+ * Sets an 24-bit RGB pixel of an image.
+ * @param image_data Image to set pixel in.
+ * @param x x-coordinate.
+ * @param y y-coordinate.
+ * @param pixel 24bit RGB packed value.
+ */
+function setPixel(image_data, x, y, pixel) {
+    console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
+    console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
+    var index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
+    image_data.data[index] = (pixel >> 16) & 0xff;
+    image_data.data[index + 1] = (pixel >> 8) & 0xff;
+    image_data.data[index + 2] = pixel & 0xff;
+    image_data.data[index + 3] = 255;
+}
+/**
  * Given a collection of edges from detectEdges, create an edge map.
  *
  * @param image_data ImageData of edges
@@ -184,7 +207,7 @@ function getEnergyMap(image_data) {
     for (var y = image_data.height - 2; y >= 0; y--) {
         energyX = [];
         for (var x = 0; x < image_data.width; x++) {
-            var bestPath = findLowestEnergy(energyArray, x, y);
+            var bestPath = findLowestEnergy(energyArray, x);
             var energy = getBand(image_data, x, y, 0);
             energyX.push(energy + bestPath);
             _maxEnergy = Math.max(_maxEnergy, energy + bestPath);
@@ -290,4 +313,33 @@ function findNextX(energy_map, prevX, y) {
         case mid:
             return prevX;
     }
+}
+/**
+ * Draw a seam onto an image.
+ *
+ * @param image_data The image to be drawn on.
+ * @param seam The seam to draw.
+ */
+function drawSeam(image_data, seam) {
+    for (var y = 0; y < image_data.height; y++) {
+        setGreyPixel(image_data, seam[y], y, 255);
+    }
+}
+/**
+ * Removes the seam from the image.
+ *
+ * @param image_data Image to remove seam from.
+ * @param seam Array of x-coordinates to remove.
+ * @return image_data with seam removed.
+ */
+function removeSeam(image_data, seam) {
+    var output = ctx.createImageData(image_data.width - 1, image_data.height);
+    for (var y = 0; y < image_data.height; y++) {
+        for (var x = 0; x < image_data.width; x++) {
+            var offset = x >= seam[y] ? 1 : 0;
+            var pixel = getPixel(image_data, x + offset, y);
+            setPixel(output, x, y, pixel);
+        }
+    }
+    return output;
 }

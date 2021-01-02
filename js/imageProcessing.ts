@@ -8,6 +8,7 @@ let ctx = canvas.getContext('2d');
 let ctx2 = canvas2.getContext('2d');
 
 let image = new Image();
+let seams = [];
 
 image.onload = function () {
   canvas.height = image.height * .8;
@@ -21,13 +22,20 @@ image.onload = function () {
 
   let pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  let edges = detectEdges(pixel_data);
+  let edges, energyMap;
+  for (let i = 0; i < 50; i++) {
 
-  let energyMap = getEnergyMap(edges);
+    edges = detectEdges(pixel_data);
+    energyMap = getEnergyMap(edges);
+    let seam = findSeam(energyMap);
 
-  let energyImg = generateEnergyMapImg(energyMap);
+    seams.push(seam);
 
-  ctx.putImageData(energyImg, 0, 0);
+    // drawSeam(energyImg, seam);
+    pixel_data = removeSeam(pixel_data, seam);
+  }
+
+  ctx.putImageData(pixel_data, 0, 0);
 }
 
 image.crossOrigin = "Anonymous";
@@ -210,6 +218,25 @@ function setBand(image_data: ImageData, x: number, y: number, b: number, sample:
 }
 
 /**
+ * Sets an 24-bit RGB pixel of an image.
+ * @param image_data Image to set pixel in.
+ * @param x x-coordinate.
+ * @param y y-coordinate.
+ * @param pixel 24bit RGB packed value.
+ */
+function setPixel(image_data: ImageData, x: number, y: number, pixel: number) {
+  console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
+  console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
+
+  let index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
+
+  image_data.data[index] = (pixel >> 16) & 0xff;
+  image_data.data[index + 1] = (pixel >> 8) & 0xff;
+  image_data.data[index + 2] = pixel & 0xff;
+  image_data.data[index + 3] = 255;
+}
+
+/**
  * Given a collection of edges from detectEdges, create an edge map.
  *
  * @param image_data ImageData of edges
@@ -231,7 +258,7 @@ function getEnergyMap(image_data: ImageData) {
     energyX = [];
     for (let x = 0; x < image_data.width; x++) {
 
-      let bestPath: number = findLowestEnergy(energyArray, x, y);
+      let bestPath: number = findLowestEnergy(energyArray, x);
       let energy: number = getBand(image_data, x, y, 0);
 
       energyX.push(energy + bestPath);
@@ -360,3 +387,35 @@ function findNextX(energy_map: number[][], prevX: number, y: number) {
   }
 }
 
+/**
+ * Draw a seam onto an image.
+ *
+ * @param image_data The image to be drawn on.
+ * @param seam The seam to draw.
+ */
+function drawSeam(image_data: ImageData, seam: number[]) {
+  for (let y = 0; y < image_data.height; y++) {
+    setGreyPixel(image_data, seam[y], y, 255);
+  }
+}
+
+/**
+ * Removes the seam from the image.
+ *
+ * @param image_data Image to remove seam from.
+ * @param seam Array of x-coordinates to remove.
+ * @return image_data with seam removed.
+ */
+function removeSeam(image_data: ImageData, seam: number[]) {
+  let output = ctx.createImageData(image_data.width - 1, image_data.height);
+
+  for (let y = 0; y < image_data.height; y++) {
+    for (let x = 0; x < image_data.width; x++) {
+      let offset = x >= seam[y] ? 1 : 0;
+      let pixel = getPixel(image_data, x + offset, y)
+      setPixel(output, x, y, pixel);
+    }
+  }
+
+  return output;
+}
