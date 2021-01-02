@@ -23,7 +23,7 @@ image.onload = function () {
   let pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
   let edges, energyMap;
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 200; i++) {
 
     edges = detectEdges(pixel_data);
     energyMap = getEnergyMap(edges);
@@ -36,6 +36,12 @@ image.onload = function () {
   }
 
   ctx.putImageData(pixel_data, 0, 0);
+
+  let img2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+  for (let seam of seams) {
+    drawSeam(img2, seam);
+  }
+  ctx2.putImageData(img2, 0, 0);
 }
 
 image.crossOrigin = "Anonymous";
@@ -151,9 +157,9 @@ function getHSBFromRGB(r: number, g: number, b: number) {
 }
 
 function getBand(image_data: ImageData, x: number, y: number, b: number) {
-  console.assert(x < image_data.width && x >= 0, "index out of bounds!");
-  console.assert(y < image_data.height && y >= 0, "index out of bounds!");
-  console.assert(b < NUM_BANDS && b >= 0, "index out of bounds!");
+  // console.assert(x < image_data.width && x >= 0, "index out of bounds!");
+  // console.assert(y < image_data.height && y >= 0, "index out of bounds!");
+  // console.assert(b < NUM_BANDS && b >= 0, "index out of bounds!");
 
   return image_data.data[(x * NUM_BANDS) + (image_data.width * NUM_BANDS * y) + b];
 }
@@ -188,8 +194,8 @@ function getPixel(image_data: ImageData, x: number, y: number) {
  */
 function setGreyPixel(image_data: ImageData, x: number, y: number, grey_value: number) {
 
-  console.assert(image_data.width > x && x >= 0 &&
-    y >= 0 && image_data.height > y, "Index out of bounds!");
+  // console.assert(image_data.width > x && x >= 0 &&
+  //   y >= 0 && image_data.height > y, "Index out of bounds!");
 
   // Set the values. Make sure alpha stays 255.
   setBand(image_data, x, y, 0, grey_value);
@@ -208,10 +214,10 @@ function setGreyPixel(image_data: ImageData, x: number, y: number, grey_value: n
  * @param sample clamped, 8-bit value.
  */
 function setBand(image_data: ImageData, x: number, y: number, b: number, sample: number) {
-  console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
-  console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
-  console.assert(b < NUM_BANDS && b >= 0, "Pixel not set! Index out of bounds!");
-  console.assert(sample >= 0 && sample <= 255, "Sample value out of bounds! " + sample);
+  // console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
+  // console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
+  // console.assert(b < NUM_BANDS && b >= 0, "Pixel not set! Index out of bounds!");
+  // console.assert(sample >= 0 && sample <= 255, "Sample value out of bounds! " + sample);
 
   let index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y) + b;
   image_data.data[index] = sample;
@@ -225,8 +231,8 @@ function setBand(image_data: ImageData, x: number, y: number, b: number, sample:
  * @param pixel 24bit RGB packed value.
  */
 function setPixel(image_data: ImageData, x: number, y: number, pixel: number) {
-  console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
-  console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
+  // console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
+  // console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
 
   let index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
 
