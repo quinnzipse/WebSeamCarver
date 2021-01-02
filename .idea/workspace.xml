@@ -44,7 +44,7 @@
       <option name="presentableId" value="Default" />
       <updated>1609202026950</updated>
       <workItem from="1609202029242" duration="1929000" />
-      <workItem from="1609290648669" duration="27798000" />
+      <workItem from="1609290648669" duration="31802000" />
     </task>
     <servers />
   </component>
@@ -55,5 +55,15 @@
         <option value="$PROJECT_DIR$/js/imageProcessing.js" />
       </list>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="201" y="265" width="540" height="524" key="StructurePopup" timestamp="1609614811632">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="201" y="265" width="540" height="524" key="StructurePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1609614811632" />
+    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1609613575965">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1609613575965" />
   </component>
 </project>

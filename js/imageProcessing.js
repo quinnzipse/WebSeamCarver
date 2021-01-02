@@ -125,7 +125,7 @@ function getBand(image_data, x, y, b) {
 function getPixel(image_data, x, y) {
     if (!(x < image_data.width && x >= 0)
         || !(y < image_data.height && y >= 0)) {
-        console.warn("Index out of bounds! Zero Padding!");
+        // console.warn("Index out of bounds! Zero Padding!");
         return 0;
     }
     var index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
@@ -194,8 +194,15 @@ function getEnergyMap(image_data) {
     console.log(_maxEnergy);
     return energyArray;
 }
-// TODO: Add doc
-function findLowestEnergy(energy_map, x, y) {
+/**
+ * Finds the lowest, connected energy value from the top of the energy map.
+ * Useful when building an energy map.
+ *
+ * @param energy_map map used to calculate lowest energy.
+ * @param x x-coordinate to stay connected to.
+ * @return lowest energy that is connected to x and is in row y.
+ */
+function findLowestEnergy(energy_map, x) {
     var mid = energy_map[0][x], right, left;
     if (x - 1 < 0) {
         left = Number.MAX_VALUE;
@@ -212,8 +219,10 @@ function findLowestEnergy(energy_map, x, y) {
     return Math.min(mid, right, left);
 }
 /**
- * TODO: Finish this doc
- * @param energy_map
+ * Creates a visual for a given energy map.
+ *
+ * @param energy_map the map to generate an image for.
+ * @return ImageData representing the mapped energy map.
  */
 function generateEnergyMapImg(energy_map) {
     var output = ctx.createImageData(energy_map[0].length, energy_map.length);
@@ -223,4 +232,62 @@ function generateEnergyMapImg(energy_map) {
         }
     }
     return output;
+}
+/**
+ * Finds a connected column of pixels with the least amount of energy.
+ *
+ * @param energy_map energy map to generate seam from.
+ * @return lowest energy, connected column through the image.
+ */
+function findSeam(energy_map) {
+    var seam = [];
+    var bestX = [];
+    bestX.push(0);
+    for (var x = 1; x < energy_map[0].length; x++) {
+        var diff = energy_map[0][bestX[0]] - energy_map[0][x];
+        if (diff > 0) {
+            // new min, set a new array.
+            bestX = [];
+            bestX.push(x);
+        }
+        else if (diff === 0) {
+            // add to the existing array.
+            bestX.push(x);
+        }
+    }
+    // Randomly pick the starting point from the smallest elements.
+    var random_index = Math.floor(Math.random() * bestX.length);
+    seam.push(bestX[random_index]);
+    for (var y = 1; y < energy_map.length; y++) {
+        seam.push(findNextX(energy_map, seam[y - 1], y));
+    }
+    return seam;
+}
+/**
+ * Calculates the lowest energy, connected x-coordinate to be included in a seam.
+ *
+ * @param energy_map energy values to use in calculation.
+ * @param prevX previous x-coordinate to maintain connectedness.
+ * @param y y-coordinate to search in energy_map.
+ * @return connected x-coordinate with least amount of energy.
+ */
+function findNextX(energy_map, prevX, y) {
+    // get each number to the left, right, and middle of the last.
+    var left = energy_map[y][prevX - 1], mid = energy_map[y][prevX], right = energy_map[y][prevX + 1];
+    // check the bounds.
+    if (isNaN(left))
+        left = Number.MAX_VALUE;
+    if (isNaN(right))
+        right = Number.MAX_VALUE;
+    // get the min.
+    var min = Math.min(mid, left, right);
+    // push the min index into the seams array.
+    switch (min) {
+        case left:
+            return prevX - 1;
+        case right:
+            return prevX + 1;
+        case mid:
+            return prevX;
+    }
 }
