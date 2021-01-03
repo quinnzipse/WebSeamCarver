@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fe778a4b-1349-44dc-9dfc-291c688e09c6" name="Default Changelist" comment="" />
+    <list default="true" id="fe778a4b-1349-44dc-9dfc-291c688e09c6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/imageProcessing.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/imageProcessing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,7 +18,11 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1mJBtCSSrXazmdJkV7QVHZ48nWR" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -44,7 +52,8 @@
       <option name="presentableId" value="Default" />
       <updated>1609202026950</updated>
       <workItem from="1609202029242" duration="1929000" />
-      <workItem from="1609290648669" duration="43883000" />
+      <workItem from="1609290648669" duration="44486000" />
+      <workItem from="1609646559957" duration="1964000" />
     </task>
     <servers />
   </component>
@@ -57,13 +66,17 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
+    <state x="552" y="160" key="#Plugins" timestamp="1609646538543">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="160" key="#Plugins/0.0.1920.1040@0.0.1920.1040" timestamp="1609646538543" />
     <state x="201" y="265" width="540" height="524" key="StructurePopup" timestamp="1609614811632">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="201" y="265" width="540" height="524" key="StructurePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1609614811632" />
-    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1609613575965">
+    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1609646527152">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1609613575965" />
+    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1609646527152" />
   </component>
 </project>

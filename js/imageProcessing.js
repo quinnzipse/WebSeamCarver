@@ -439,8 +439,12 @@ function addSeam(image_data, seam) {
  * @return Modified image.
  */
 function addSeams(image_data, seams) {
+    var offsets;
     for (var _i = 0, seams_2 = seams; _i < seams_2.length; _i++) {
         var seam = seams_2[_i];
+        for (var y = 0; y < seam.length; y++) {
+            // if(seam[y] === offsets[y][seam[y]])
+        }
         image_data = addSeam(image_data, seam);
     }
     return image_data;

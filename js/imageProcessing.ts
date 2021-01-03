@@ -535,7 +535,13 @@ function addSeam(image_data: ImageData, seam: number[]) {
  * @return Modified image.
  */
 function addSeams(image_data: ImageData, seams: number[][]) {
+  let offsets: number[][];
+
   for (let seam of seams) {
+    for (let y = 0; y < seam.length; y++) {
+      // if(seam[y] === offsets[y][seam[y]])
+    }
+
     image_data = addSeam(image_data, seam);
   }
 
