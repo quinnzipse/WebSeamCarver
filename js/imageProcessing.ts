@@ -535,15 +535,19 @@ function addSeam(image_data: ImageData, seam: number[]) {
  * @return Modified image.
  */
 function addSeams(image_data: ImageData, seams: number[][]) {
-  let offsets: number[][];
+  let output = ctx.createImageData(image_data);
 
-  for (let seam of seams) {
-    for (let y = 0; y < seam.length; y++) {
-      // if(seam[y] === offsets[y][seam[y]])
+  for (let y = 0; y < image_data.height; y++) {
+    let xPos = [];
+    for (let x = 0; x < seams.length; x++) {
+      xPos.push(seams[x][y]);
     }
+    xPos.sort();
 
-    image_data = addSeam(image_data, seam);
+    for (let x = 0; x < seams.length + image_data.width; x++) {
+
+    }
   }
 
-  return image_data;
+  return output;
 }
