@@ -11,11 +11,11 @@ let image = new Image();
 let seams = [];
 
 image.onload = function () {
-  canvas.height = image.height * .8;
-  canvas.width = image.width * .8;
+  canvas.height = image.height;
+  canvas.width = image.width;
 
-  canvas2.height = image.height * .8;
-  canvas2.width = image.width * .8;
+  canvas2.height = image.height;
+  canvas2.width = image.width;
 
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
@@ -23,7 +23,7 @@ image.onload = function () {
   let pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
   let edges, energyMap;
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 100; i++) {
 
     edges = detectEdges(pixel_data);
     energyMap = getEnergyMap(edges);
@@ -34,6 +34,8 @@ image.onload = function () {
     // drawSeam(energyImg, seam);
     pixel_data = removeSeam(pixel_data, seam);
   }
+
+  canvas.width = pixel_data.width;
 
   ctx.putImageData(pixel_data, 0, 0);
 
@@ -416,7 +418,7 @@ function removeSeam(image_data: ImageData, seam: number[]) {
   let output = ctx.createImageData(image_data.width - 1, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
-    for (let x = 0; x < image_data.width; x++) {
+    for (let x = 0; x < output.width; x++) {
       let offset = x >= seam[y] ? 1 : 0;
       let pixel = getPixel(image_data, x + offset, y)
       setPixel(output, x, y, pixel);

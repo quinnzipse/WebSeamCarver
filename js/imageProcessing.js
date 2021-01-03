@@ -7,15 +7,15 @@ var ctx2 = canvas2.getContext('2d');
 var image = new Image();
 var seams = [];
 image.onload = function () {
-    canvas.height = image.height * .8;
-    canvas.width = image.width * .8;
-    canvas2.height = image.height * .8;
-    canvas2.width = image.width * .8;
+    canvas.height = image.height;
+    canvas.width = image.width;
+    canvas2.height = image.height;
+    canvas2.width = image.width;
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
     var pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var edges, energyMap;
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < 100; i++) {
         edges = detectEdges(pixel_data);
         energyMap = getEnergyMap(edges);
         var seam = findSeam(energyMap);
@@ -23,6 +23,7 @@ image.onload = function () {
         // drawSeam(energyImg, seam);
         pixel_data = removeSeam(pixel_data, seam);
     }
+    canvas.width = pixel_data.width;
     ctx.putImageData(pixel_data, 0, 0);
     var img2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
     for (var _i = 0, seams_1 = seams; _i < seams_1.length; _i++) {
@@ -341,7 +342,7 @@ function drawSeam(image_data, seam) {
 function removeSeam(image_data, seam) {
     var output = ctx.createImageData(image_data.width - 1, image_data.height);
     for (var y = 0; y < image_data.height; y++) {
-        for (var x = 0; x < image_data.width; x++) {
+        for (var x = 0; x < output.width; x++) {
             var offset = x >= seam[y] ? 1 : 0;
             var pixel = getPixel(image_data, x + offset, y);
             setPixel(output, x, y, pixel);
