@@ -22,27 +22,16 @@ image.onload = function () {
 
   let pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  let edges, energyMap;
-  for (let i = 0; i < 100; i++) {
+  // cropXBy(pixel_data, 50);
 
-    edges = detectEdges(pixel_data);
-    energyMap = getEnergyMap(edges);
-    let seam = findSeam(energyMap);
-
-    seams.push(seam);
-
-    // drawSeam(energyImg, seam);
-    pixel_data = removeSeam(pixel_data, seam);
-  }
+  pixel_data = extendXBy(pixel_data, 240);
 
   canvas.width = pixel_data.width;
 
   ctx.putImageData(pixel_data, 0, 0);
 
   let img2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
-  for (let seam of seams) {
-    drawSeam(img2, seam);
-  }
+  drawSeams(img2, seams);
   ctx2.putImageData(img2, 0, 0);
 }
 
@@ -50,6 +39,68 @@ image.crossOrigin = "Anonymous";
 image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
 
 let _maxEnergy = -1;
+
+/**
+ * Crops the image by a certain amount trying to preserve objects.
+ *
+ * @param image_data Image to crop.
+ * @param i Amount to crop by.
+ */
+function cropXBy(image_data: ImageData, i: number) {
+  seams = [];
+  let edges, energyMap;
+  for (let i = 0; i < i; i++) {
+
+    edges = detectEdges(image_data);
+    energyMap = getEnergyMap(edges);
+    let seam = findSeam(energyMap);
+
+    seams.push(seam);
+
+    image_data = removeSeam(image_data, seam);
+  }
+}
+
+/**
+ * Extends the image in width by a specified amount.
+ *
+ * @param image_data Image to stretch.
+ * @param i Amount to expand the width (in pixels).
+ * @return Stretched image.
+ */
+function extendXBy(image_data: ImageData, i: number) {
+  let output: ImageData = copyImage(image_data), edges, energyMap;
+  seams = [];
+
+  while (i > 0) {
+
+    edges = detectEdges(image_data);
+    energyMap = getEnergyMap(edges);
+    let seam = findSeam(energyMap);
+
+    drawSeam(image_data, seam);
+    seams.push(seam);
+
+    i--;
+  }
+
+  output = addSeams(output, seams);
+
+  return output;
+}
+
+/**
+ * Deep copies an image and returns the new ImageData.
+ * @param image_data Image to copy.
+ * @return Copy of image.
+ */
+function copyImage(image_data: ImageData) {
+  let output = ctx.createImageData(image_data);
+
+  output.data.set(image_data.data);
+
+  return output;
+}
 
 /**
  * Sets the image to only the brightness band in hsv.
@@ -276,8 +327,6 @@ function getEnergyMap(image_data: ImageData) {
     energyArray.unshift(energyX);
   }
 
-  console.log(_maxEnergy);
-
   return energyArray;
 }
 
@@ -408,6 +457,20 @@ function drawSeam(image_data: ImageData, seam: number[]) {
 }
 
 /**
+ * Draw multiple seams onto an image. Does not account for offsetting.
+ *
+ * @param image_data The image to be drawn on.
+ * @param seams The seams to display
+ */
+function drawSeams(image_data: ImageData, seams: number[][]) {
+  for (let seam of seams) {
+    for (let y = 0; y < image_data.height; y++) {
+      setGreyPixel(image_data, seam[y], y, 255);
+    }
+  }
+}
+
+/**
  * Removes the seam from the image.
  *
  * @param image_data Image to remove seam from.
@@ -426,4 +489,55 @@ function removeSeam(image_data: ImageData, seam: number[]) {
   }
 
   return output;
+}
+
+/**
+ * Adds a column to the image_data of the image, averaging the pixels to the left and right.
+ *
+ * @param image_data Image to add a seam to.
+ * @param seam An array of x-coordinates to add pixels to in image.
+ * @return Modified image.
+ */
+function addSeam(image_data: ImageData, seam: number[]) {
+  let output = ctx.createImageData(image_data.width + 1, image_data.height);
+
+  for (let y = 0; y < image_data.height; y++) {
+    for (let x = 0; x < output.width; x++) {
+      let pixel = 0, offset = x > seam[y] ? 1 : 0;
+
+      if (x === seam[y]) {
+
+        // Average each band!
+        pixel |= Math.floor((getBand(image_data, x - 1, y, 0)
+          + getBand(image_data, x + 1, y, 0)) / 2) << 16;
+        pixel |= Math.floor((getBand(image_data, x - 1, y, 1)
+          + getBand(image_data, x + 1, y, 1)) / 2) << 8;
+        pixel |= Math.floor((getBand(image_data, x - 1, y, 2)
+          + getBand(image_data, x + 1, y, 2)) / 2);
+
+      } else {
+        pixel = getPixel(image_data, x - offset, y);
+      }
+
+      setPixel(output, x, y, pixel);
+    }
+  }
+
+  return output;
+}
+
+/**
+ * Adds a new column of pixels to the image at each seam.
+ *
+ * @see addSeam
+ * @param image_data Image to expand.
+ * @param seams Array of seams to stretch the image at.
+ * @return Modified image.
+ */
+function addSeams(image_data: ImageData, seams: number[][]) {
+  for (let seam of seams) {
+    image_data = addSeam(image_data, seam);
+  }
+
+  return image_data;
 }
