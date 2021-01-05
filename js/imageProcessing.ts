@@ -507,13 +507,7 @@ function addSeam(image_data: ImageData, seam: number[]) {
 
       if (x === seam[y]) {
 
-        // Average each band!
-        pixel |= Math.floor((getBand(image_data, x - 1, y, 0)
-          + getBand(image_data, x + 1, y, 0)) / 2) << 16;
-        pixel |= Math.floor((getBand(image_data, x - 1, y, 1)
-          + getBand(image_data, x + 1, y, 1)) / 2) << 8;
-        pixel |= Math.floor((getBand(image_data, x - 1, y, 2)
-          + getBand(image_data, x + 1, y, 2)) / 2);
+        interpolatePixel(image_data, x, y);
 
       } else {
         pixel = getPixel(image_data, x - offset, y);
@@ -527,6 +521,26 @@ function addSeam(image_data: ImageData, seam: number[]) {
 }
 
 /**
+ * Averages each band of the pixel to the left and right of the designated x,y.
+ *
+ * @param image_data Image to interpolate from.
+ * @param x x-coordinate to interpolate.
+ * @param y y-coordinate to interpolate.
+ * @return new pixel that belongs at x,y of image_data.
+ */
+function interpolatePixel(image_data: ImageData, x: number, y: number) {
+  // Average each band!
+  let pixel = Math.floor((getBand(image_data, x - 1, y, 0)
+    + getBand(image_data, x + 1, y, 0)) / 2) << 16;
+  pixel |= Math.floor((getBand(image_data, x - 1, y, 1)
+    + getBand(image_data, x + 1, y, 1)) / 2) << 8;
+  pixel |= Math.floor((getBand(image_data, x - 1, y, 2)
+    + getBand(image_data, x + 1, y, 2)) / 2);
+
+  return pixel;
+}
+
+/**
  * Adds a new column of pixels to the image at each seam.
  *
  * @see addSeam
@@ -535,17 +549,25 @@ function addSeam(image_data: ImageData, seam: number[]) {
  * @return Modified image.
  */
 function addSeams(image_data: ImageData, seams: number[][]) {
-  let output = ctx.createImageData(image_data);
+  let output = ctx.createImageData(image_data.width + seams.length, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
     let xPos = [];
     for (let x = 0; x < seams.length; x++) {
       xPos.push(seams[x][y]);
     }
-    xPos.sort();
+    xPos.sort((n1, n2) => n1 - n2);
 
-    for (let x = 0; x < seams.length + image_data.width; x++) {
+    console.log(xPos);
 
+    let seamIndex = 0;
+    for (let x = 0; x < image_data.width; x++) {
+      while (seamIndex < xPos.length && xPos[seamIndex] === x) {
+        setPixel(output, x + seamIndex, y, interpolatePixel(image_data, x, y));
+        seamIndex++;
+      }
+
+      setPixel(output, x + seamIndex, y, getPixel(image_data, x, y));
     }
   }
 
