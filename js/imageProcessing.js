@@ -1,9 +1,7 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
 var NUM_BANDS = 4;
-var canvas = document.getElementById('image');
-var canvas2 = document.getElementById('originalImage');
-var ctx = canvas.getContext('2d');
-var ctx2 = canvas2.getContext('2d');
+var canvas = document.getElementById('image'), canvas2 = document.getElementById('originalImage'), canvas3 = document.getElementById('edges');
+var ctx = canvas.getContext('2d'), ctx2 = canvas2.getContext('2d'), ctx3 = canvas3.getContext('2d');
 var image = new Image();
 var seams = [];
 image.onload = function () {
@@ -11,10 +9,14 @@ image.onload = function () {
     canvas.width = image.width;
     canvas2.height = image.height;
     canvas2.width = image.width;
+    canvas3.height = image.height;
+    canvas3.width = image.width;
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
     var pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
     // cropXBy(pixel_data, 50);
+    var edge_img = detectEdges(pixel_data);
+    ctx3.putImageData(edge_img, 0, 0);
     pixel_data = extendXBy(pixel_data, 240);
     canvas.width = pixel_data.width;
     ctx.putImageData(pixel_data, 0, 0);
@@ -97,23 +99,27 @@ function brightExtract(image_data) {
  * @return output image data
  */
 function detectEdges(image_data) {
-    var output = ctx.createImageData(image_data.width, image_data.height);
+    var output = ctx.createImageData(image_data);
     // For each pixel...
     for (var y = 0; y < image_data.height; y++) {
         for (var x = 0; x < image_data.width; x++) {
             // Get the right and left brightnesses.
-            var right_brightness = getHSBFromPackedRGB(getPixel(image_data, x + 1, y))[2];
-            var left_brightness = getHSBFromPackedRGB(getPixel(image_data, x - 1, y))[2];
+            var right = getHSBFromPackedRGB(getPixel(image_data, x + 1, y));
+            var left = getHSBFromPackedRGB(getPixel(image_data, x - 1, y));
             // Get the top and bottom brightnesses.
-            var top_brightness = getHSBFromPackedRGB(getPixel(image_data, x, y - 1))[2];
-            var bottom_brightness = getHSBFromPackedRGB(getPixel(image_data, x, y + 1))[2];
+            var top_1 = getHSBFromPackedRGB(getPixel(image_data, x, y - 1));
+            var bottom = getHSBFromPackedRGB(getPixel(image_data, x, y + 1));
             // b is 0...1 so I will scale it to 8 bits.
-            var xDiff = Math.abs(left_brightness * 255 - right_brightness * 255);
-            var yDiff = Math.abs(top_brightness * 255 - bottom_brightness * 255);
+            var xDiff = Math.abs(left[2] * 255 - right[2] * 255);
+            var yDiff = Math.abs(top_1[2] * 255 - bottom[2] * 255);
+            var xHueDiff = Math.pow((Math.abs((left[0] - 180)) - Math.abs(right[0] - 180)), 2);
+            var yHueDiff = Math.pow((Math.abs((top_1[0] - 180)) - Math.abs(bottom[0] - 180)), 2);
             // Combine these two to get the final edge value.
-            var edge_strength = Math.floor(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
+            var bright_strength = Math.floor(Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2)));
+            var hue_strength = Math.floor(Math.sqrt(xHueDiff + yHueDiff));
             // set that pixel to the output image data.
-            setGreyPixel(output, x, y, edge_strength);
+            setGreyPixel(output, x, y, bright_strength + hue_strength * .01);
+            setGreyPixel(output, x, y, bright_strength);
         }
     }
     return output;
