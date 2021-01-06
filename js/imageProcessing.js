@@ -1,5 +1,8 @@
+"use strict";
+exports.__esModule = true;
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
 var NUM_BANDS = 4;
+var imgUtil_1 = require("./imgUtil");
 var canvas = document.getElementById('image'), canvas2 = document.getElementById('originalImage'), canvas3 = document.getElementById('edges');
 var ctx = canvas.getContext('2d'), ctx2 = canvas2.getContext('2d'), ctx3 = canvas3.getContext('2d');
 var image = new Image();
@@ -224,22 +227,6 @@ function setBand(image_data, x, y, b, sample) {
     image_data.data[index] = sample;
 }
 /**
- * Sets an 24-bit RGB pixel of an image.
- * @param image_data Image to set pixel in.
- * @param x x-coordinate.
- * @param y y-coordinate.
- * @param pixel 24bit RGB packed value.
- */
-function setPixel(image_data, x, y, pixel) {
-    // console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
-    // console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
-    var index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
-    image_data.data[index] = (pixel >> 16) & 0xff;
-    image_data.data[index + 1] = (pixel >> 8) & 0xff;
-    image_data.data[index + 2] = pixel & 0xff;
-    image_data.data[index + 3] = 255;
-}
-/**
  * Given a collection of edges from detectEdges, create an edge map.
  *
  * @param image_data ImageData of edges
@@ -402,7 +389,7 @@ function removeSeam(image_data, seam) {
         for (var x = 0; x < output.width; x++) {
             var offset = x >= seam[y] ? 1 : 0;
             var pixel = getPixel(image_data, x + offset, y);
-            setPixel(output, x, y, pixel);
+            imgUtil_1.ImgUtil.setPixel(output, x, y, pixel);
         }
     }
     return output;
@@ -425,7 +412,7 @@ function addSeam(image_data, seam) {
             else {
                 pixel = getPixel(image_data, x - offset, y);
             }
-            setPixel(output, x, y, pixel);
+            imgUtil_1.ImgUtil.setPixel(output, x, y, pixel);
         }
     }
     return output;
@@ -468,10 +455,10 @@ function addSeams(image_data, seams) {
         var seamIndex = 0;
         for (var x = 0; x < image_data.width; x++) {
             while (seamIndex < xPos.length && xPos[seamIndex] === x) {
-                setPixel(output, x + seamIndex, y, interpolatePixel(image_data, x, y));
+                imgUtil_1.ImgUtil.setPixel(output, x + seamIndex, y, interpolatePixel(image_data, x, y));
                 seamIndex++;
             }
-            setPixel(output, x + seamIndex, y, getPixel(image_data, x, y));
+            imgUtil_1.ImgUtil.setPixel(output, x + seamIndex, y, getPixel(image_data, x, y));
         }
     }
     return output;

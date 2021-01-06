@@ -1,6 +1,8 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
 const NUM_BANDS = 4;
 
+import {ImgUtil} from "./imgUtil";
+
 let canvas = document.getElementById('image') as HTMLCanvasElement,
   canvas2 = document.getElementById('originalImage') as HTMLCanvasElement,
   canvas3 = document.getElementById('edges') as HTMLCanvasElement;
@@ -289,25 +291,6 @@ function setBand(image_data: ImageData, x: number, y: number, b: number, sample:
 }
 
 /**
- * Sets an 24-bit RGB pixel of an image.
- * @param image_data Image to set pixel in.
- * @param x x-coordinate.
- * @param y y-coordinate.
- * @param pixel 24bit RGB packed value.
- */
-function setPixel(image_data: ImageData, x: number, y: number, pixel: number) {
-  // console.assert(x < image_data.width && x >= 0, "Pixel not set! Index out of bounds!");
-  // console.assert(y < image_data.height && y >= 0, "Pixel not set! Index out of bounds!");
-
-  let index = (x * NUM_BANDS) + (image_data.width * NUM_BANDS * y);
-
-  image_data.data[index] = (pixel >> 16) & 0xff;
-  image_data.data[index + 1] = (pixel >> 8) & 0xff;
-  image_data.data[index + 2] = pixel & 0xff;
-  image_data.data[index + 3] = 255;
-}
-
-/**
  * Given a collection of edges from detectEdges, create an edge map.
  *
  * @param image_data ImageData of edges
@@ -496,7 +479,7 @@ function removeSeam(image_data: ImageData, seam: number[]) {
     for (let x = 0; x < output.width; x++) {
       let offset = x >= seam[y] ? 1 : 0;
       let pixel = getPixel(image_data, x + offset, y)
-      setPixel(output, x, y, pixel);
+      ImgUtil.setPixel(output, x, y, pixel);
     }
   }
 
@@ -525,7 +508,7 @@ function addSeam(image_data: ImageData, seam: number[]) {
         pixel = getPixel(image_data, x - offset, y);
       }
 
-      setPixel(output, x, y, pixel);
+      ImgUtil.setPixel(output, x, y, pixel);
     }
   }
 
@@ -575,11 +558,11 @@ function addSeams(image_data: ImageData, seams: number[][]) {
     let seamIndex = 0;
     for (let x = 0; x < image_data.width; x++) {
       while (seamIndex < xPos.length && xPos[seamIndex] === x) {
-        setPixel(output, x + seamIndex, y, interpolatePixel(image_data, x, y));
+        ImgUtil.setPixel(output, x + seamIndex, y, interpolatePixel(image_data, x, y));
         seamIndex++;
       }
 
-      setPixel(output, x + seamIndex, y, getPixel(image_data, x, y));
+      ImgUtil.setPixel(output, x + seamIndex, y, getPixel(image_data, x, y));
     }
   }
 
