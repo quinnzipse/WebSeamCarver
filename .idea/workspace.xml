@@ -2,14 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fe778a4b-1349-44dc-9dfc-291c688e09c6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/js/imgUtil.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/EnergyMap.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/imageProcessing.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/imageProcessing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/imgUtil.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/imgUtil.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/imgUtil.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/imgUtil.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +60,7 @@
       <workItem from="1609290648669" duration="44486000" />
       <workItem from="1609646559957" duration="5888000" />
       <workItem from="1609814358251" duration="3712000" />
-      <workItem from="1609819316676" duration="10249000" />
+      <workItem from="1609819316676" duration="14998000" />
     </task>
     <servers />
   </component>
