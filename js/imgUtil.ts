@@ -153,7 +153,7 @@ export class ImgUtil {
    * @return an array of three numbers representing hue (0-360), saturation (0-1), and brightness (0-1)
    */
   public static getHSBFromPackedRGB(packedRGB: number) {
-    return getHSBFromRGB(packedRGB >> 16 & 0xff, packedRGB >> 8 & 0xff, packedRGB & 0xff);
+    return this.getHSBFromRGB(packedRGB >> 16 & 0xff, packedRGB >> 8 & 0xff, packedRGB & 0xff);
   }
 
   /**

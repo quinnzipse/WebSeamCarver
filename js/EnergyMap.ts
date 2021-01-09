@@ -2,55 +2,61 @@ import {ImgUtil} from "./imgUtil";
 
 export class EnergyMap {
 
-  private _maxEnergy = -1;
+  public static readonly directions = Object.freeze({"left": 0, "down": 1, "right": 2});
+
+  private readonly max_energy: number;
+  private readonly energy_map: number[][];
+  public readonly energies: number[];
+  public readonly direction_map: number[][];
 
   /**
    * Given a collection of edges from detectEdges, create an edge map.
    *
-   * @param image_data ImageData of edges
+   * @param edges ImageData of edges
    * @return edgeMap
    */
-  public getEnergyMap(image_data: ImageData) {
-    let energyArray = [];
+  constructor(edges: ImageData) {
+    this.energy_map = [];
 
     // Initialize the bottom row.
     let energyX = [];
-    for (let x = 0; x < image_data.width; x++) {
-      let energy: number = ImgUtil.getBand(image_data, x, image_data.height - 1, 0);
+
+    for (let x = 0; x < edges.width; x++) {
+      let energy: number = ImgUtil.getBand(edges, x, edges.height - 1, 0);
       energyX.push(energy);
-      this._maxEnergy = Math.max(this._maxEnergy, energy);
+
+      this.max_energy = Math.max(this.max_energy, energy);
     }
-    energyArray.push(energyX);
 
-    for (let y = image_data.height - 2; y >= 0; y--) {
+    this.energy_map.push(energyX);
+
+    for (let y = edges.height - 2; y >= 0; y--) {
       energyX = [];
-      for (let x = 0; x < image_data.width; x++) {
+      for (let x = 0; x < edges.width; x++) {
 
-        let bestPath: number = findLowestEnergy(energyArray, x);
-        let energy: number = ImgUtil.getBand(image_data, x, y, 0);
+        let bestPath: number = this.findLowestEnergy(x);
+        let energy: number = ImgUtil.getBand(edges, x, y, 0);
 
         energyX.push(energy + bestPath);
-        this._maxEnergy = Math.max(this._maxEnergy, energy + bestPath);
+        this.max_energy = Math.max(this.max_energy, energy + bestPath);
       }
 
-      energyArray.unshift(energyX);
+      this.energy_map.unshift(energyX);
     }
-
-    return energyArray;
   }
 
   /**
    * Creates a visual for a given energy map.
    *
-   * @param energy_map the map to generate an image for.
+   * @param ctx
    * @return ImageData representing the mapped energy map.
    */
-  public generateEnergyMapImg(energy_map: number[][]) {
-    let output: ImageData = ctx.createImageData(energy_map[0].length, energy_map.length);
+  public generateEnergyMapImg(ctx: CanvasRenderingContext2D) {
+    let output: ImageData = ctx.createImageData(this.energy_map[0].length, this.energy_map.length);
 
-    for (let y = 0; y < energy_map.length; y++) {
-      for (let x = 0; x < energy_map[0].length; x++) {
-        ImgUtil.setGreyPixel(output, x, y, energy_map[y][x] / (this._maxEnergy / 255));
+    for (let y = 0; y < this.energy_map.length; y++) {
+      for (let x = 0; x < this.energy_map[0].length; x++) {
+        ImgUtil.setGreyPixel(output, x, y, this.energy_map[y][x] / (this.max_energy / 255));
       }
     }
 
@@ -61,23 +67,22 @@ export class EnergyMap {
    * Finds the lowest, connected energy value from the top of the energy map.
    * Useful when building an energy map.
    *
-   * @param energy_map map used to calculate lowest energy.
    * @param x x-coordinate to stay connected to.
    * @return lowest energy that is connected to x and is in row y.
    */
-  public findLowestEnergy(energy_map: number[][], x: number) {
-    let mid = energy_map[0][x], right, left;
+  public findLowestEnergy(x: number) {
+    let mid = this.energy_map[0][x], right, left;
 
     if (x - 1 < 0) {
       left = Number.MAX_VALUE;
     } else {
-      left = energy_map[0][x - 1];
+      left = this.energy_map[0][x - 1];
     }
 
-    if (x + 1 == energy_map[0].length) {
+    if (x + 1 == this.energy_map[0].length) {
       right = Number.MAX_VALUE;
     } else {
-      right = energy_map[0][x + 1];
+      right = this.energy_map[0][x + 1];
     }
 
     return Math.min(mid, right, left);

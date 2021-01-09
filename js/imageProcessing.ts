@@ -1,4 +1,5 @@
 import {ImgUtil} from "./imgUtil";
+import {EnergyMap} from "./EnergyMap";
 
 let canvas = document.getElementById('image') as HTMLCanvasElement,
   canvas2 = document.getElementById('originalImage') as HTMLCanvasElement,
@@ -57,7 +58,7 @@ function cropXBy(image_data: ImageData, i: number) {
   for (let i = 0; i < i; i++) {
 
     edges = detectEdges(image_data);
-    energyMap = getEnergyMap(edges);
+    energyMap = new EnergyMap(edges);
     let seam = findSeam(energyMap);
 
     seams.push(seam);
@@ -80,7 +81,7 @@ function extendXBy(image_data: ImageData, i: number) {
   while (i > 0) {
 
     edges = detectEdges(image_data);
-    energyMap = getEnergyMap(edges);
+    energyMap = new EnergyMap(edges);
     let seam = findSeam(energyMap);
 
     drawSeam(image_data, seam);
@@ -106,7 +107,7 @@ function brightExtract(image_data: ImageData) {
   for (let y = 0; y < image_data.height; y++) {
     for (let x = 0; x < image_data.width; x++) {
       // Extract the brightness band.
-      let brightness = Math.floor(getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x, y))[2] * 255);
+      let brightness = Math.floor(ImgUtil.getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x, y))[2] * 255);
       ImgUtil.setGreyPixel(output, x, y, brightness);
     }
   }
@@ -128,12 +129,12 @@ function detectEdges(image_data: ImageData) {
     for (let x = 0; x < image_data.width; x++) {
 
       // Get the right and left brightnesses.
-      let right = getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x + 1, y));
-      let left = getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x - 1, y));
+      let right = ImgUtil.getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x + 1, y));
+      let left = ImgUtil.getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x - 1, y));
 
       // Get the top and bottom brightnesses.
-      let top = getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x, y - 1));
-      let bottom = getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x, y + 1));
+      let top = ImgUtil.getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x, y - 1));
+      let bottom = ImgUtil.getHSBFromPackedRGB(ImgUtil.getPixel(image_data, x, y + 1));
 
       // b is 0...1 so I will scale it to 8 bits.
       let xDiff = Math.abs(left[2] * 255 - right[2] * 255);
