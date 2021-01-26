@@ -1,9 +1,13 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
 const NUM_BANDS = 4;
 
-let canvas = document.getElementById('image') as HTMLCanvasElement,
-  canvas2 = document.getElementById('originalImage') as HTMLCanvasElement,
-  canvas3 = document.getElementById('edges') as HTMLCanvasElement;
+onmessage = message => acceptMessage(message);
+
+function acceptMessage(message) {
+
+}
+
+
 
 let ctx = canvas.getContext('2d'),
   ctx2 = canvas2.getContext('2d'),
