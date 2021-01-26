@@ -7,45 +7,8 @@ function acceptMessage(message) {
 
 }
 
-
-
-let ctx = canvas.getContext('2d'),
-  ctx2 = canvas2.getContext('2d'),
-  ctx3 = canvas3.getContext('2d');
-
 let image = new Image();
 let seams = [];
-
-image.onload = function () {
-  canvas.height = image.height;
-  canvas.width = image.width;
-
-  canvas2.height = image.height;
-  canvas2.width = image.width;
-
-  canvas3.height = image.height;
-  canvas3.width = image.width;
-
-  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
-
-  let pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-  // cropXBy(pixel_data, 50);
-
-  let edge_img = detectEdges(pixel_data);
-  ctx3.putImageData(edge_img, 0, 0);
-
-  pixel_data = extendXBy(pixel_data, 240);
-
-  canvas.width = pixel_data.width;
-
-  ctx.putImageData(pixel_data, 0, 0);
-
-  let img2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
-  drawSeams(img2, seams);
-  ctx2.putImageData(img2, 0, 0);
-}
 
 image.crossOrigin = "Anonymous";
 image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
@@ -57,19 +20,20 @@ let _maxEnergy = -1;
  *
  * @param image_data Image to crop.
  * @param i Amount to crop by.
+ * @param context
  */
-function cropXBy(image_data: ImageData, i: number) {
+function cropXBy(image_data: ImageData, i: number, context: CanvasRenderingContext2D) {
   seams = [];
   let edges, energyMap;
   for (let i = 0; i < i; i++) {
 
-    edges = detectEdges(image_data);
+    edges = detectEdges(image_data, context);
     energyMap = getEnergyMap(edges);
     let seam = findSeam(energyMap);
 
     seams.push(seam);
 
-    image_data = removeSeam(image_data, seam);
+    image_data = removeSeam(image_data, seam, context);
   }
 }
 
@@ -78,15 +42,16 @@ function cropXBy(image_data: ImageData, i: number) {
  *
  * @param image_data Image to stretch.
  * @param i Amount to expand the width (in pixels).
+ * @param context
  * @return Stretched image.
  */
-function extendXBy(image_data: ImageData, i: number) {
-  let output: ImageData = copyImage(image_data), edges, energyMap;
+function extendXBy(image_data: ImageData, i: number, context: CanvasRenderingContext2D) {
+  let output: ImageData = copyImage(image_data, context), edges, energyMap;
   seams = [];
 
   while (i > 0) {
 
-    edges = detectEdges(image_data);
+    edges = detectEdges(image_data, context);
     energyMap = getEnergyMap(edges);
     let seam = findSeam(energyMap);
 
@@ -96,7 +61,7 @@ function extendXBy(image_data: ImageData, i: number) {
     i--;
   }
 
-  output = addSeams(output, seams);
+  output = addSeams(output, seams, context);
 
   return output;
 }
@@ -104,10 +69,11 @@ function extendXBy(image_data: ImageData, i: number) {
 /**
  * Deep copies an image and returns the new ImageData.
  * @param image_data Image to copy.
+ * @param context
  * @return Copy of image.
  */
-function copyImage(image_data: ImageData) {
-  let output = ctx.createImageData(image_data);
+function copyImage(image_data: ImageData, context: CanvasRenderingContext2D) {
+  let output = context.createImageData(image_data);
 
   output.data.set(image_data.data);
 
@@ -117,10 +83,11 @@ function copyImage(image_data: ImageData) {
 /**
  * Sets the image to only the brightness band in hsv.
  * @param image_data ImageData of the image you'd like to make greyscale.
+ * @param context
  */
-function brightExtract(image_data: ImageData) {
+function brightExtract(image_data: ImageData, context: CanvasRenderingContext2D) {
   // Create the destination image.
-  let output = ctx.createImageData(image_data.width, image_data.height);
+  let output = context.createImageData(image_data.width, image_data.height);
 
   // For each pixel...
   for (let y = 0; y < image_data.height; y++) {
@@ -140,8 +107,8 @@ function brightExtract(image_data: ImageData) {
  * @param image_data
  * @return output image data
  */
-function detectEdges(image_data: ImageData) {
-  let output = ctx.createImageData(image_data);
+function detectEdges(image_data: ImageData, context: CanvasRenderingContext2D) {
+  let output = context.createImageData(image_data);
 
   // For each pixel...
   for (let y = 0; y < image_data.height; y++) {
@@ -378,8 +345,8 @@ function findLowestEnergy(energy_map: number[][], x: number) {
  * @param energy_map the map to generate an image for.
  * @return ImageData representing the mapped energy map.
  */
-function generateEnergyMapImg(energy_map: number[][]) {
-  let output: ImageData = ctx.createImageData(energy_map[0].length, energy_map.length);
+function generateEnergyMapImg(energy_map: number[][], context: CanvasRenderingContext2D) {
+  let output: ImageData = context.createImageData(energy_map[0].length, energy_map.length);
 
   for (let y = 0; y < energy_map.length; y++) {
     for (let x = 0; x < energy_map[0].length; x++) {
@@ -491,10 +458,11 @@ function drawSeams(image_data: ImageData, seams: number[][]) {
  *
  * @param image_data Image to remove seam from.
  * @param seam Array of x-coordinates to remove.
+ * @param context
  * @return image_data with seam removed.
  */
-function removeSeam(image_data: ImageData, seam: number[]) {
-  let output = ctx.createImageData(image_data.width - 1, image_data.height);
+function removeSeam(image_data: ImageData, seam: number[], context: CanvasRenderingContext2D) {
+  let output = context.createImageData(image_data.width - 1, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
     for (let x = 0; x < output.width; x++) {
@@ -512,10 +480,11 @@ function removeSeam(image_data: ImageData, seam: number[]) {
  *
  * @param image_data Image to add a seam to.
  * @param seam An array of x-coordinates to add pixels to in image.
+ * @param context
  * @return Modified image.
  */
-function addSeam(image_data: ImageData, seam: number[]) {
-  let output = ctx.createImageData(image_data.width + 1, image_data.height);
+function addSeam(image_data: ImageData, seam: number[], context: CanvasRenderingContext2D) {
+  let output = context.createImageData(image_data.width + 1, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
     for (let x = 0; x < output.width; x++) {
@@ -562,10 +531,11 @@ function interpolatePixel(image_data: ImageData, x: number, y: number) {
  * @see addSeam
  * @param image_data Image to expand.
  * @param seams Array of seams to stretch the image at.
+ * @param context
  * @return Modified image.
  */
-function addSeams(image_data: ImageData, seams: number[][]) {
-  let output = ctx.createImageData(image_data.width + seams.length, image_data.height);
+function addSeams(image_data: ImageData, seams: number[][], context: CanvasRenderingContext2D) {
+  let output = context.createImageData(image_data.width + seams.length, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
     let xPos = [];
