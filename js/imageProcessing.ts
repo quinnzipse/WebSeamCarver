@@ -1,12 +1,6 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
 const NUM_BANDS = 4;
 
-onmessage = message => acceptMessage(message);
-
-function acceptMessage(message) {
-
-}
-
 let image = new Image();
 let seams = [];
 
