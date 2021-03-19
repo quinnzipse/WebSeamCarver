@@ -1,4 +1,4 @@
-import {cropXBy} from './imageProcessing';
+import {cropXBy} from './imageProcessing.ts';
 
 self.addEventListener('message', function (event) {
   console.group('Logging session brought to you by the image-worker!');

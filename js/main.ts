@@ -21,7 +21,7 @@ function startWorker() {
 
   // Initialize worker!
   if (window.Worker) {
-    let worker = new Worker(new URL("./image-worker", import.meta.url));
+    worker = new Worker(new URL('./image.worker.js', import.meta.url));
 
     worker.onmessage = function (message) {
       return receiveMessage(message);
@@ -31,8 +31,7 @@ function startWorker() {
       console.log("ERROR: ", message.error);
       console.log(message.message, message.filename, message.lineno);
     };
-  }
-else {
+  } else {
     console.error("This browser doesn't support web workers! " +
       "I'm sorry, but they are very crucial to the operation. Please try a different browser!");
   }

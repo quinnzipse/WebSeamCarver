@@ -8,7 +8,7 @@ module.exports = {
         test: /\.ts$/,
         use: 'ts-loader',
         include: path.resolve(__dirname, 'js')
-      }
+      },
     ]
   },
   resolve: {
@@ -17,12 +17,13 @@ module.exports = {
   devtool: 'source-map',
   mode: 'development',
   devServer: {
-    contentBase: path.resolve(__dirname, './'),
-    publicPath: path.resolve(__dirname, '/js/dist/'),
+    contentBase: './',
+    publicPath: './js/dist/'
   },
   output: {
-    publicPath: path.resolve(__dirname, "js/dist/"),
+    publicPath: "js/dist/",
     filename: "bundle.js",
     path: path.resolve(__dirname, 'js/dist'),
+    // path: 'js/dist',
   }
 }
