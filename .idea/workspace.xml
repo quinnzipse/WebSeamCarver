@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe778a4b-1349-44dc-9dfc-291c688e09c6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/js/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/image-worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/image-worker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/imageProcessing.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/imageProcessing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -134,7 +125,7 @@
       <workItem from="1613001991516" duration="13000" />
       <workItem from="1613003236353" duration="620000" />
       <workItem from="1616042836167" duration="5397000" />
-      <workItem from="1616100038260" duration="12587000" />
+      <workItem from="1616100038260" duration="12733000" />
     </task>
     <servers />
   </component>
