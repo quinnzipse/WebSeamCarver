@@ -1,3 +1,5 @@
+require('./image-worker.ts');
+
 let worker: Worker = null,
   original_image: HTMLCanvasElement = document.getElementById('originalImage') as HTMLCanvasElement,
   original_context: CanvasRenderingContext2D = original_image.getContext('2d'),
@@ -21,7 +23,7 @@ function startWorker() {
 
   // Initialize worker!
   if (window.Worker) {
-    worker = new Worker("js/image-worker.js", {type: "module"});
+    worker = new Worker("js/image-worker", {type: "module"});
     console.log("Worker initialized!", worker);
 
     worker.onmessage = function (message) {
@@ -29,7 +31,7 @@ function startWorker() {
     };
 
     worker.onerror = function (message) {
-      console.error(message)
+      console.log("ERROR: ", message.error, message.message)
     };
 
   } else {
