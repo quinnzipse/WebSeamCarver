@@ -1,5 +1,5 @@
 ## Things I learned from this project!
-- Webworkers!
+- Webworkers
 - Typescript
 - HTML5 Canvas
 - Webpack
