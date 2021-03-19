@@ -5,7 +5,11 @@ let worker: Worker = null,
   output_context: CanvasRenderingContext2D = output_image.getContext("2d"),
   default_image: HTMLImageElement = document.getElementById('default_image') as HTMLImageElement;
 
-default_image.onload = startWorker;
+if (default_image.complete) {
+  startWorker();
+} else {
+  default_image.onload = startWorker;
+}
 
 function startWorker() {
   default_image.crossOrigin = "Anonymous";
@@ -17,10 +21,17 @@ function startWorker() {
 
   // Initialize worker!
   if (window.Worker) {
-    worker = new Worker("js/image-worker.js");
+    worker = new Worker("js/image-worker.js", {type: "module"});
     console.log("Worker initialized!", worker);
 
-    worker.onmessage = message => receiveMessage(message);
+    worker.onmessage = function (message) {
+      return receiveMessage(message);
+    };
+
+    worker.onerror = function (message) {
+      console.error(message)
+    };
+
   } else {
     console.error("This browser doesn't support web workers! " +
       "I'm sorry, but they are very crucial to the operation. Please try a different browser!");

@@ -29,12 +29,12 @@
      src="https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1554925323/shape/mentalfloss/clocks_1.png"
      alt="persistence of memory" id="default_image">
 <div id="canvas_holder">
-  <canvas id="image"></canvas>
-  <canvas id="originalImage"></canvas>
-  <canvas id="edges"></canvas>
+  <canvas id="image" title="output!"></canvas>
+  <canvas id="originalImage" title="original"></canvas>
+  <canvas id="edges" title="edge map"></canvas>
 </div>
-
-<script src="js/main.js"></script>
+<!-- using webpack 🎉 -->
+<script type="module" src="js/dist/bundle.js"></script>
 </body>
 
 </html>

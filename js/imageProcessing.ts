@@ -1,5 +1,9 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d');
+
 const NUM_BANDS = 4;
+
 
 let image = new Image();
 let seams = [];
@@ -14,9 +18,10 @@ let _maxEnergy = -1;
  *
  * @param image_data Image to crop.
  * @param i Amount to crop by.
- * @param context
  */
-function cropXBy(image_data: ImageData, i: number, context: CanvasRenderingContext2D) {
+export function cropXBy(image_data: ImageData, i: number) {
+  console.log("HELLO!");
+
   seams = [];
   let edges, energyMap;
   for (let i = 0; i < i; i++) {
