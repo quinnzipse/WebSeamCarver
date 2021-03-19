@@ -1,4 +1,4 @@
-// const {cropXBy} = require("./imageProcessing.ts");
+import {cropXBy} from './imageProcessing';
 
 self.addEventListener('message', function (event) {
   console.group('Logging session brought to you by the image-worker!');
@@ -6,7 +6,7 @@ self.addEventListener('message', function (event) {
   console.groupEnd();
 
   // try {
-  //   cropXBy(event.data.source_image, 50);
+    cropXBy(event.data.source_image, 50);
   // } catch (e) {
   //   console.error(e);
   // }

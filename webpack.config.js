@@ -11,9 +11,17 @@ module.exports = {
       }
     ]
   },
-  mode: "production",
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
+  devtool: 'source-map',
+  mode: 'development',
+  devServer: {
+    contentBase: path.resolve(__dirname, './'),
+    publicPath: path.resolve(__dirname, '/js/dist/'),
+  },
   output: {
-    publicPath: "js/dist",
+    publicPath: path.resolve(__dirname, "js/dist/"),
     filename: "bundle.js",
     path: path.resolve(__dirname, 'js/dist'),
   }

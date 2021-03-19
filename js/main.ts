@@ -1,5 +1,3 @@
-require('./image-worker.ts');
-
 let worker: Worker = null,
   original_image: HTMLCanvasElement = document.getElementById('originalImage') as HTMLCanvasElement,
   original_context: CanvasRenderingContext2D = original_image.getContext('2d'),
@@ -23,18 +21,18 @@ function startWorker() {
 
   // Initialize worker!
   if (window.Worker) {
-    worker = new Worker("js/image-worker", {type: "module"});
-    console.log("Worker initialized!", worker);
+    let worker = new Worker(new URL("/js/image-worker", import.meta.url));
 
     worker.onmessage = function (message) {
       return receiveMessage(message);
     };
 
     worker.onerror = function (message) {
-      console.log("ERROR: ", message.error, message.message)
+      console.log("ERROR: ", message.error);
+      console.log(message.message, message.filename, message.lineno);
     };
-
-  } else {
+  }
+else {
     console.error("This browser doesn't support web workers! " +
       "I'm sorry, but they are very crucial to the operation. Please try a different browser!");
   }

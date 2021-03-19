@@ -2,7 +2,10 @@
   "name": "web_seam_carving",
   "version": "0.0.1",
   "description": "Content aware Cropping",
-  "keywords": ["Image Processing","Dynamic Programming"],
+  "keywords": [
+    "Image Processing",
+    "Dynamic Programming"
+  ],
   "license": "MIT",
   "author": "Quinn Zipse",
   "type": "module",

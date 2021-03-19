@@ -6,10 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="fe778a4b-1349-44dc-9dfc-291c688e09c6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/doc/html.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/html.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/image-worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/image-worker.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/image-worker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/image-worker.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/js/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -71,6 +72,12 @@
     <property name="ts.external.directory.path" value="D:\Project\SeamCarving\node_modules\typescript\lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Project\SeamCarving\js" />
+      <recent name="D:\Project\SeamCarving\js\dist" />
+    </key>
+  </component>
   <component name="RunManager" selected="npm.server">
     <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
@@ -129,7 +136,7 @@
       <workItem from="1613003236353" duration="620000" />
       <workItem from="1616042836167" duration="5397000" />
       <workItem from="1616100038260" duration="13588000" />
-      <workItem from="1616123265304" duration="1671000" />
+      <workItem from="1616123265304" duration="8437000" />
     </task>
     <servers />
   </component>
