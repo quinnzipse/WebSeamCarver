@@ -21,7 +21,7 @@ function startWorker() {
 
   // Initialize worker!
   if (window.Worker) {
-    let worker = new Worker(new URL("/js/image-worker", import.meta.url));
+    let worker = new Worker(new URL("./image-worker", import.meta.url));
 
     worker.onmessage = function (message) {
       return receiveMessage(message);
