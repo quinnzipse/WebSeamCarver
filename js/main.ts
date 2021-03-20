@@ -1,26 +1,20 @@
-let worker: Worker = null,
-  original_image: HTMLCanvasElement = document.getElementById('originalImage') as HTMLCanvasElement,
-  original_context: CanvasRenderingContext2D = original_image.getContext('2d'),
-  output_image: HTMLCanvasElement = document.getElementById('image') as HTMLCanvasElement,
-  output_context: CanvasRenderingContext2D = output_image.getContext("2d"),
-  default_image: HTMLImageElement = document.getElementById('default_image') as HTMLImageElement;
+import {Command, isAWorkerResponse, WorkerMessage, WorkerResponse} from "./protocols";
 
-if (default_image.complete) {
+let worker: Worker = null,
+  original_canvas: HTMLCanvasElement = document.getElementById('originalImage') as HTMLCanvasElement,
+  output_canvas: HTMLCanvasElement = document.getElementById('image') as HTMLCanvasElement,
+  default_image_url = 'https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1554925323/shape/mentalfloss/clocks_1.png';
+
+function initialize_page() {
+  let downloaded_image = new Image;
+  downloaded_image.crossOrigin = 'Anonymous';
+  downloaded_image.onload = () => drawImageOnCanvas(downloaded_image, original_canvas);
+  downloaded_image.src = default_image_url; // TODO: Make this a variable
+
   startWorker();
-} else {
-  default_image.onload = startWorker;
 }
 
 function startWorker() {
-  default_image.onload = null;
-  default_image.crossOrigin = "Anonymous";
-
-  // Put an image in the original_image spot!
-  original_image.width = default_image.width;
-  original_image.height = default_image.height;
-  original_context.drawImage(default_image, 0, 0)
-
-  // Initialize worker!
   if (window.Worker) {
     worker = new Worker(new URL('./image.worker', import.meta.url));
 
@@ -29,37 +23,70 @@ function startWorker() {
     };
 
     worker.onerror = function (message) {
-      console.log("ERROR: ", message.error);
-      console.log(message.message, message.filename, message.lineno);
+      console.log("ERROR: ", message.error, message.message);
+      return true;
     };
   } else {
     console.error("This browser doesn't support web workers! " +
       "I'm sorry, but they are very crucial to the operation. Please try a different browser!");
   }
-
-  // Not sure why I need this...
-  setTimeout(testWorker, 100);
 }
 
-function testWorker() {
-  let message = {
+export function testWorker() {
+  let source_image_data: ImageData =
+    original_canvas
+      .getContext('2d')
+      .getImageData(0, 0, original_canvas.width, original_canvas.height);
+
+  let message: WorkerMessage = {
+    command: Command.RESIZE,
     target_size: {
-      x: 500,
-      y: 500,
+      width: 500,
+      height: 500,
     },
-    source_image: original_context.getImageData(0, 0, original_image.width, original_image.height),
+    source_image: source_image_data,
   };
 
+  sendMessageToWorker(message);
+}
+
+function sendMessageToWorker(message: WorkerMessage) {
   worker.postMessage(message, null);
 }
 
-function receiveMessage(message) {
-  let output_image_data: ImageData = message.data.output_image;
+function receiveMessage(message: MessageEvent) {
+  let response = message.data;
 
-  output_image.height = output_image_data.height;
-  output_image.width = output_image_data.width;
+  if (response.status_code !== 200) {
+    console.error(response.status_code, response.error_message);
+    return;
+  }
 
-
-  output_context.putImageData(output_image_data, 0, 0);
-  worker.terminate();
+  if (isAWorkerResponse(message.data)) {
+    loadResponseImage(message.data);
+  } else {
+    console.error("Got invalid response from worker!");
+  }
 }
+
+function loadResponseImage(response: WorkerResponse) {
+  let output_image_data: ImageData = response.data;
+
+  drawImageDataOnCanvas(output_image_data, output_canvas);
+}
+
+function drawImageOnCanvas(image_element: HTMLImageElement, canvas: HTMLCanvasElement) {
+  let canvas_context = canvas.getContext('2d');
+  canvas.width = image_element.width;
+  canvas.height = image_element.height;
+  canvas_context.drawImage(image_element, 0, 0);
+}
+
+function drawImageDataOnCanvas(image: ImageData, canvas: HTMLCanvasElement) {
+  let canvas_context = canvas.getContext('2d');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  canvas_context.putImageData(image, 0, 0);
+}
+
+initialize_page();

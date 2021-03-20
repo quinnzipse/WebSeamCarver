@@ -25,9 +25,7 @@
 <body>
 <script src="js/vendor/modernizr-3.11.2.min.js"></script>
 <script src="js/plugins.js"></script>
-<img style=""
-     src="https://images2.minutemediacdn.com/image/upload/c_fill,g_auto,h_1248,w_2220/f_auto,q_auto,w_1100/v1554925323/shape/mentalfloss/clocks_1.png"
-     alt="persistence of memory" id="default_image">
+<button type="button" onclick="carve()">Carve!</button>
 <div id="canvas_holder">
   <canvas id="image" title="output!"></canvas>
   <canvas id="originalImage" title="original"></canvas>
@@ -35,6 +33,11 @@
 </div>
 <!-- using webpack 🎉 -->
 <script src="js/dist/bundle.js"></script>
+<script>
+  function carve() {
+    ImageLibrary.testWorker();
+  }
+</script>
 </body>
 
 </html>

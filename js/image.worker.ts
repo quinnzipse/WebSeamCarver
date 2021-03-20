@@ -1,17 +1,46 @@
 import {cropXBy} from './imageProcessing';
+import {isAWorkerMessage, WorkerMessage, WorkerResponse, Command, Dimensions} from "./protocols";
 
-self.addEventListener('message', function (event) {
+self.addEventListener('message', function (received_message) {
   console.group('Logging session brought to you by the image-worker!');
-  console.log("Repeating the message for now...", event.data.source_image);
-  console.groupEnd();
 
-  let output_image: ImageData = cropXBy(event.data.source_image, 50);
+  let command = received_message.data;
+  console.log(command);
 
-  // TODO: eventually process and then return a modified image...
-  let reply = {
-    output_image: output_image
+  let reply: WorkerResponse = {
+    status_code: 400,
+    error_message: 'Bad Request',
+    data: null
   };
 
-  self.postMessage(reply, null);
+  if (isAWorkerMessage(command)) {
+    console.log("You sent a valid Worker Message!");
+    reply = execute(command);
+  } else {
+    console.log("Invalid Input!!");
+  }
 
+  console.groupEnd();
+  self.postMessage(reply, null);
 });
+
+function execute(message: WorkerMessage): WorkerResponse {
+  let output: WorkerResponse = {
+    status_code: 500,
+    error_message: 'Internal Server Error',
+    data: null
+  };
+
+  if (message.command === Command.RESIZE) {
+    output.data = resize(message.source_image, message.target_size);
+    output.status_code = 200;
+    output.error_message = '';
+  }
+
+  return output;
+}
+
+function resize(image: ImageData, size: Dimensions): ImageData {
+  // TODO: Needs more...
+  return cropXBy(image, 50);
+}

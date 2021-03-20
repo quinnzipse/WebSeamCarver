@@ -24,5 +24,6 @@ module.exports = {
     publicPath: "js/dist/",
     filename: "bundle.js",
     path: path.resolve(__dirname, 'js/dist'),
+    library: 'ImageLibrary'
   }
 }
