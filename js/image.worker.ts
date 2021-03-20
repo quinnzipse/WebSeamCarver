@@ -1,4 +1,4 @@
-import {cropXBy} from './imageProcessing.ts';
+import {cropXBy} from './imageProcessing';
 
 self.addEventListener('message', function (event) {
   console.group('Logging session brought to you by the image-worker!');
@@ -6,14 +6,14 @@ self.addEventListener('message', function (event) {
   console.groupEnd();
 
   // try {
-    cropXBy(event.data.source_image, 50);
+    let output_image = cropXBy(event.data.source_image, 50);
   // } catch (e) {
   //   console.error(e);
   // }
 
   // TODO: eventually process and then return a modified image...
   let reply = {
-    output_image: event.data.source_image
+    output_image: output_image
   };
 
   self.postMessage(reply, null);

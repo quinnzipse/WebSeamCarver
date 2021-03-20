@@ -1,16 +1,6 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
-const canvas = document.createElement('canvas');
-const context = canvas.getContext('2d');
-
 const NUM_BANDS = 4;
-
-
-let image = new Image();
 let seams = [];
-
-image.crossOrigin = "Anonymous";
-image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
-
 let _maxEnergy = -1;
 
 /**
@@ -34,6 +24,8 @@ export function cropXBy(image_data: ImageData, i: number) {
 
     image_data = removeSeam(image_data, seam, context);
   }
+
+  return image_data;
 }
 
 /**
@@ -68,11 +60,10 @@ function extendXBy(image_data: ImageData, i: number, context: CanvasRenderingCon
 /**
  * Deep copies an image and returns the new ImageData.
  * @param image_data Image to copy.
- * @param context
  * @return Copy of image.
  */
-function copyImage(image_data: ImageData, context: CanvasRenderingContext2D) {
-  let output = context.createImageData(image_data);
+function copyImage(image_data: ImageData) {
+  let output = new ImageData(image_data.width, image_data.height);
 
   output.data.set(image_data.data);
 
@@ -106,8 +97,8 @@ function brightExtract(image_data: ImageData, context: CanvasRenderingContext2D)
  * @param image_data
  * @return output image data
  */
-function detectEdges(image_data: ImageData, context: CanvasRenderingContext2D) {
-  let output = context.createImageData(image_data);
+function detectEdges(image_data: ImageData) {
+  let output = new ImageData(image_data.width, image_data.height);
 
   // For each pixel...
   for (let y = 0; y < image_data.height; y++) {

@@ -12,6 +12,7 @@ if (default_image.complete) {
 }
 
 function startWorker() {
+  default_image.onload = null;
   default_image.crossOrigin = "Anonymous";
 
   // Put an image in the original_image spot!
@@ -21,7 +22,7 @@ function startWorker() {
 
   // Initialize worker!
   if (window.Worker) {
-    worker = new Worker(new URL('./image.worker.js', import.meta.url));
+    worker = new Worker(new URL('./image.worker', import.meta.url));
 
     worker.onmessage = function (message) {
       return receiveMessage(message);
@@ -46,7 +47,7 @@ function testWorker() {
       x: 500,
       y: 500,
     },
-    source_image: original_context.getImageData(0, 0, original_image.width, original_image.height)
+    source_image: original_context.getImageData(0, 0, original_image.width, original_image.height),
   };
 
   worker.postMessage(message, null);
