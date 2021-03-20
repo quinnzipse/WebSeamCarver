@@ -5,11 +5,7 @@ self.addEventListener('message', function (event) {
   console.log("Repeating the message for now...", event.data.source_image);
   console.groupEnd();
 
-  // try {
-    let output_image = cropXBy(event.data.source_image, 50);
-  // } catch (e) {
-  //   console.error(e);
-  // }
+  let output_image: ImageData = cropXBy(event.data.source_image, 50);
 
   // TODO: eventually process and then return a modified image...
   let reply = {
