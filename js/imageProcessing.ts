@@ -1,4 +1,6 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
+import NumberFormat = Intl.NumberFormat;
+
 const NUM_BANDS = 4;
 let seams = [];
 let _maxEnergy = -1;
@@ -7,14 +9,22 @@ let _maxEnergy = -1;
  * Crops the image by a certain amount trying to preserve objects.
  *
  * @param image_data Image to crop.
- * @param i Amount to crop by.
+ * @param width Amount to crop by.
  */
-export function cropXBy(image_data: ImageData, i: number) {
-  console.log("HELLO!");
+export function cropXBy(image_data: ImageData, width: number) {
+  const MAX_STEPS = 50;
 
   seams = [];
   let edges, energyMap;
-  for (let i = 0; i < i; i++) {
+  let progress = 0;
+  let step = Math.ceil(width / MAX_STEPS);
+  for (let i = 0; i < width; i++) {
+
+    if (i % step === 0) {
+      let process_in_percent = (progress * 100).toFixed(0);
+      console.log("Progress:",  process_in_percent + "%");
+      progress += step / width;
+    }
 
     edges = detectEdges(image_data);
     energyMap = getEnergyMap(edges);

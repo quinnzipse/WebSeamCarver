@@ -41,6 +41,6 @@ function execute(message: WorkerMessage): WorkerResponse {
 }
 
 function resize(image: ImageData, size: Dimensions): ImageData {
-  // TODO: Needs more...
+  console.log(image.height + " -> " + size.height, image.width + " -> " + size.width);
   return cropXBy(image, 50);
 }
