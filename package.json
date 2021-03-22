@@ -1,17 +1,24 @@
 {
-  "name": " ",
+  "name": "web_seam_carving",
   "version": "0.0.1",
-  "description": "",
-  "keywords": "",
-  "license": "",
-  "author": "",
+  "description": "Content aware Cropping",
+  "keywords": [
+    "Image Processing",
+    "Dynamic Programming"
+  ],
+  "license": "MIT",
+  "author": "Quinn Zipse",
+  "type": "module",
   "scripts": {
-    "build": "parcel build index.html",
-    "dev": "parcel index.html --open",
-    "start": "npm run build && npm run dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "server": "webpack serve"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "ts-loader": "^8.0.18",
+    "typescript": "^4.2.3",
+    "webpack": "^5.26.3",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.2"
   }
 }

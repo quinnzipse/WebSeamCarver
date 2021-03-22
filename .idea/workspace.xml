@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="fe778a4b-1349-44dc-9dfc-291c688e09c6" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/imageProcessing.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/image.worker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/image.worker.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/imageProcessing.ts" beforeDir="false" afterPath="$PROJECT_DIR$/js/imageProcessing.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -17,11 +18,32 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript File" />
+        <option value="JavaScript File" />
+        <option value="tsconfig.json" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="refactoring" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/.gitignore" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/index.html" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/css/main.css" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/js/imageProcessing.ts" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectId" id="1mJBtCSSrXazmdJkV7QVHZ48nWR" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -42,8 +64,53 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
-    <property name="ts.external.directory.path" value="C:\Users\qzips\AppData\Local\JetBrains\Toolbox\apps\WebStorm\ch-0\202.6948.73\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="ts.external.directory.path" value="D:\Project\SeamCarving\node_modules\typescript\lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Project\SeamCarving\js" />
+      <recent name="D:\Project\SeamCarving\js\dist" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.build">
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="server" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="server" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.server" />
+        <item itemvalue="npm.start" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -58,30 +125,17 @@
       <workItem from="1609646559957" duration="5888000" />
       <workItem from="1609814358251" duration="3712000" />
       <workItem from="1609819316676" duration="5312000" />
+      <workItem from="1611711765829" duration="1200000" />
+      <workItem from="1612623869028" duration="1225000" />
+      <workItem from="1613001991516" duration="13000" />
+      <workItem from="1613003236353" duration="620000" />
+      <workItem from="1616042836167" duration="5397000" />
+      <workItem from="1616100038260" duration="13588000" />
+      <workItem from="1616123265304" duration="40212000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-    <option name="exactExcludedFiles">
-      <list>
-        <option value="$PROJECT_DIR$/js/imageProcessing.js" />
-      </list>
-    </option>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="552" y="160" key="#Plugins" timestamp="1609646538543">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="552" y="160" key="#Plugins/0.0.1920.1040@0.0.1920.1040" timestamp="1609646538543" />
-    <state x="201" y="265" width="570" height="524" key="StructurePopup" timestamp="1609891483462">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="201" y="265" width="570" height="524" key="StructurePopup/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1609891483462" />
-    <state x="201" y="265" width="540" height="524" key="StructurePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1609614811632" />
-    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1609646527152">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="143" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1609646527152" />
   </component>
 </project>

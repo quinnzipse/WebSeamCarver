@@ -1,63 +1,30 @@
 // This code assumes a RGBA colorspace. However, I'm not sure if that's fair to assume in an HTMLCanvasElement.
+import NumberFormat = Intl.NumberFormat;
+
 const NUM_BANDS = 4;
-
-let canvas = document.getElementById('image') as HTMLCanvasElement,
-  canvas2 = document.getElementById('originalImage') as HTMLCanvasElement,
-  canvas3 = document.getElementById('edges') as HTMLCanvasElement;
-
-let ctx = canvas.getContext('2d'),
-  ctx2 = canvas2.getContext('2d'),
-  ctx3 = canvas3.getContext('2d');
-
-let image = new Image();
 let seams = [];
-
-image.onload = function () {
-  canvas.height = image.height;
-  canvas.width = image.width;
-
-  canvas2.height = image.height;
-  canvas2.width = image.width;
-
-  canvas3.height = image.height;
-  canvas3.width = image.width;
-
-  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  ctx2.drawImage(image, 0, 0, canvas2.width, canvas2.height);
-
-  let pixel_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-  // cropXBy(pixel_data, 50);
-
-  let edge_img = detectEdges(pixel_data);
-  ctx3.putImageData(edge_img, 0, 0);
-
-  pixel_data = extendXBy(pixel_data, 240);
-
-  canvas.width = pixel_data.width;
-
-  ctx.putImageData(pixel_data, 0, 0);
-
-  let img2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
-  drawSeams(img2, seams);
-  ctx2.putImageData(img2, 0, 0);
-}
-
-image.crossOrigin = "Anonymous";
-image.src = 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Broadway_tower_edit.jpg';
-
 let _maxEnergy = -1;
 
 /**
  * Crops the image by a certain amount trying to preserve objects.
  *
  * @param image_data Image to crop.
- * @param i Amount to crop by.
+ * @param width Amount to crop by.
  */
-function cropXBy(image_data: ImageData, i: number) {
+export function cropXBy(image_data: ImageData, width: number) {
+  const MAX_STEPS = 50;
+
   seams = [];
   let edges, energyMap;
-  for (let i = 0; i < i; i++) {
+  let progress = 0;
+  let step = Math.ceil(width / MAX_STEPS);
+  for (let i = 0; i < width; i++) {
+
+    if (i % step === 0) {
+      let process_in_percent = (progress * 100).toFixed(0);
+      console.log("Progress:",  process_in_percent + "%");
+      progress += step / width;
+    }
 
     edges = detectEdges(image_data);
     energyMap = getEnergyMap(edges);
@@ -67,6 +34,8 @@ function cropXBy(image_data: ImageData, i: number) {
 
     image_data = removeSeam(image_data, seam);
   }
+
+  return image_data;
 }
 
 /**
@@ -103,7 +72,7 @@ function extendXBy(image_data: ImageData, i: number) {
  * @return Copy of image.
  */
 function copyImage(image_data: ImageData) {
-  let output = ctx.createImageData(image_data);
+  let output = new ImageData(image_data.width, image_data.height);
 
   output.data.set(image_data.data);
 
@@ -116,7 +85,7 @@ function copyImage(image_data: ImageData) {
  */
 function brightExtract(image_data: ImageData) {
   // Create the destination image.
-  let output = ctx.createImageData(image_data.width, image_data.height);
+  let output = new ImageData(image_data.width, image_data.height);
 
   // For each pixel...
   for (let y = 0; y < image_data.height; y++) {
@@ -137,7 +106,7 @@ function brightExtract(image_data: ImageData) {
  * @return output image data
  */
 function detectEdges(image_data: ImageData) {
-  let output = ctx.createImageData(image_data);
+  let output = new ImageData(image_data.width, image_data.height);
 
   // For each pixel...
   for (let y = 0; y < image_data.height; y++) {
@@ -372,10 +341,9 @@ function findLowestEnergy(energy_map: number[][], x: number) {
  * Creates a visual for a given energy map.
  *
  * @param energy_map the map to generate an image for.
- * @return ImageData representing the mapped energy map.
  */
 function generateEnergyMapImg(energy_map: number[][]) {
-  let output: ImageData = ctx.createImageData(energy_map[0].length, energy_map.length);
+  let output: ImageData = new ImageData(energy_map[0].length, energy_map.length);
 
   for (let y = 0; y < energy_map.length; y++) {
     for (let x = 0; x < energy_map[0].length; x++) {
@@ -490,7 +458,7 @@ function drawSeams(image_data: ImageData, seams: number[][]) {
  * @return image_data with seam removed.
  */
 function removeSeam(image_data: ImageData, seam: number[]) {
-  let output = ctx.createImageData(image_data.width - 1, image_data.height);
+  let output = new ImageData(image_data.width - 1, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
     for (let x = 0; x < output.width; x++) {
@@ -511,7 +479,7 @@ function removeSeam(image_data: ImageData, seam: number[]) {
  * @return Modified image.
  */
 function addSeam(image_data: ImageData, seam: number[]) {
-  let output = ctx.createImageData(image_data.width + 1, image_data.height);
+  let output = new ImageData(image_data.width + 1, image_data.height);
 
   for (let y = 0; y < image_data.height; y++) {
     for (let x = 0; x < output.width; x++) {
@@ -561,7 +529,9 @@ function interpolatePixel(image_data: ImageData, x: number, y: number) {
  * @return Modified image.
  */
 function addSeams(image_data: ImageData, seams: number[][]) {
-  let output = ctx.createImageData(image_data.width + seams.length, image_data.height);
+  let output = new ImageData(image_data.width + seams.length, image_data.height);
+
+  // TODO: Need to duplicate image_data to output!!
 
   for (let y = 0; y < image_data.height; y++) {
     let xPos = [];

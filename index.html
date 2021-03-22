@@ -25,28 +25,19 @@
 <body>
 <script src="js/vendor/modernizr-3.11.2.min.js"></script>
 <script src="js/plugins.js"></script>
-
+<button type="button" onclick="carve()">Carve!</button>
 <div id="canvas_holder">
-  <canvas id="image"></canvas>
-  <canvas id="originalImage"></canvas>
-  <canvas id="edges"></canvas>
+  <canvas id="image" title="output!"></canvas>
+  <canvas id="originalImage" title="original"></canvas>
+  <canvas id="edges" title="edge map"></canvas>
 </div>
-
-<script src="js/imageProcessing.js"></script>
-
-<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+<!-- using webpack 🎉 -->
+<script src="js/dist/bundle.js"></script>
 <script>
-  window.ga = function () {
-    ga.q.push(arguments)
-  };
-  ga.q = [];
-  ga.l = +new Date;
-  ga('create', 'UA-XXXXX-Y', 'auto');
-  ga('set', 'anonymizeIp', true);
-  ga('set', 'transport', 'beacon');
-  ga('send', 'pageview')
+  function carve() {
+    ImageLibrary.testWorker();
+  }
 </script>
-<script src="https://www.google-analytics.com/analytics.js" async></script>
 </body>
 
 </html>
